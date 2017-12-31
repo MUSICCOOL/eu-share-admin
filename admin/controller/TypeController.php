@@ -4,6 +4,7 @@ namespace admin\controller;
 
 use admin\model\ConstantModel;
 use admin\model\TypeModel;
+use lib\Page;
 
 class TypeController extends BaseController
 {
@@ -12,10 +13,14 @@ class TypeController extends BaseController
         $page  = empty($this->params['page']) ? 1 : $this->params['page'];
         $count = empty($this->params['count']) ? ConstantModel::DEFAULR_PER_PAGE_COUNT : $this->params['count'];
 
-        $types = TypeModel::orderBy('order', 'asc')->orderBy('created_at', 'desc')->paginate($count);
+        $type = TypeModel::orderBy('order', 'asc')->orderBy('created_at', 'desc');
+        $total = $type->count();
+
+        $page = new Page($total, $page, $count);
+        $types = $type->skip($page->limit['start'])->take($page->limit['count'])->get();
 
         // 渲染模板
-        $this->renderView('type/list', ['types' => $types]);
+        $this->renderView('type/list', ['types' => $types, 'paginator' => $page->fpage()]);
     }
 
     public function add()
@@ -37,7 +42,7 @@ class TypeController extends BaseController
             }
         } catch (\Exception $e) {
             echo '该类型已存在！';
-            echo '<a href="' . APP_FILE . '?c=type&a=add">返回</a>';
+            echo '<a href="/type/add">返回</a>';
         }
     }
 
