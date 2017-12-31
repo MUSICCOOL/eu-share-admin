@@ -5,7 +5,6 @@ namespace admin\controller;
 use admin\model\CommentModel;
 use admin\model\ConstantModel;
 use lib\Page;
-use system\Paginator;
 
 class CommentController extends BaseController
 {
