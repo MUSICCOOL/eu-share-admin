@@ -4,7 +4,6 @@ namespace admin\controller;
 
 use admin\model\ConstantModel;
 use admin\model\DownModel;
-use admin\model\IncomeModel;
 use lib\Page;
 
 class DownController extends BaseController

@@ -2,8 +2,6 @@
 
 namespace system;
 
-;
-
 class Constant
 {
     /** whole */

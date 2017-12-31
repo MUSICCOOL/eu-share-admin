@@ -41,7 +41,7 @@ class Route
                 $i                             += 2;
             }
             $query['c'] = empty($parts[0]) ? 'Index' : ucfirst($parts[0]);
-            $query['a'] = empty($parts[1]) ? 'Index' : ucfirst($parts[1]);
+            $query['a'] = empty($parts[1]) ? 'index' : $parts[1];
         }
 
         return $query;

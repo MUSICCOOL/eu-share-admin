@@ -3,7 +3,6 @@
 namespace admin\controller;
 
 use admin\model\ConstantModel;
-use admin\model\ConsumerModel;
 use admin\model\UserModel;
 use lib\Page;
 
