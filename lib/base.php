@@ -19,4 +19,5 @@ if ((isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') || (isset($_SERVER['
 } else {
     $url_type = 'http';
 }
-define("BASE_URL", $url_type . '://' . $_SERVER['SERVER_NAME'] . '/');
+$port = ($_SERVER['REMOTE_PORT'] == '80') ? '' : ':' . $_SERVER['REMOTE_PORT'];
+define("BASE_URL", $url_type . '://' . $_SERVER['SERVER_NAME'] . $port . '/');
