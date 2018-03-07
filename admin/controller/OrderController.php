@@ -48,9 +48,9 @@ class OrderController extends BaseController
         $order->amount    = $this->params['amount'];
         $order->type      = $this->params['type'];
         $order->status    = $this->params['status'];
-        $order->remark    = $this->params['remark'];
+        $order->remark    = htmlspecialchars($this->params['remark']);
 
-        Log::info('order do update', [$order->save()]);
+        Log::info('order do update', $this->params);
 
         // 开启事务
         DB::beginTransaction();
@@ -59,35 +59,32 @@ class OrderController extends BaseController
             if (!$order->save()) {
                 DB::rollBack();
                 Log::error('order do update order save error', $this->params);
-                $this->alert(ConstantModel::UPDATE_ERROR);
+                $this->alert(['code' => ConstantModel::UPDATE_ERROR]);
             }
             $user = UserModel::find($this->params['user_id']);
             if (in_array($this->params['type'], OrderModel::$order_type_vip)) {
-                if ($this->params['status'] == OrderModel::ORDER_STATUS_SUC) {
-                    $user->vip         = UserModel::IS_VIP;
-                    $user->vip_exptime = $this->params['type'] * (24 * 3600) + time();
-                } else {
+                if ($this->params['status'] == OrderModel::ORDER_STATUS_ERR) {
                     $user->vip         = UserModel::IS_NOT_VIP;
                     $user->vip_exptime = 0;
                 }
                 if (!$user->save()) {
                     DB::rollBack();
                     Log::error('order do update user save error', $this->params);
-                    $this->alert(ConstantModel::UPDATE_ERROR);
+                    $this->alert(['code'=>ConstantModel::UPDATE_ERROR]);
                 }
             } elseif (in_array($this->params['type'], OrderModel::$order_type_rec)) {
-                if ($this->params['status'] == OrderModel::ORDER_STATUS_SUC) {
-                    $user->e_points += $this->params['amount'] * 10;
+                if ($this->params['status'] == OrderModel::ORDER_STATUS_ERR) {
+                    $user->e_points -= $this->params['amount'] * 10;
                     if (!$user->save()) {
                         DB::rollBack();
                         Log::error('order do update user save error', $this->params);
-                        $this->alert(ConstantModel::UPDATE_ERROR);
+                        $this->alert(['code' => ConstantModel::UPDATE_ERROR]);
                     }
                 }
             } else {
                 DB::rollBack();
                 Log::error('order do update param error', $this->params);
-                $this->alert(ConstantModel::PARAM_ERROR);
+                $this->alert(['code' => ConstantModel::PARAM_ERROR]);
             }
 
             DB::commit();
@@ -97,8 +94,8 @@ class OrderController extends BaseController
             $this->redirect('order', 'index');
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error('order do update error', $e);
-            $this->alert(ConstantModel::UPDATE_ERROR);
+            Log::error('order do update error', [$e->getMessage()]);
+            $this->alert(['code' => ConstantModel::UPDATE_ERROR, 'msg' => $e->getMessage()]);
         }
 
     }
