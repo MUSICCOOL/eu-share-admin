@@ -78,19 +78,24 @@ class Controller
 
     protected function alert($data)
     {
-        if (is_array($data) && isset($data['code'])) {
-            if (is_array($data['code'])) {
-                $msg = '';
-                foreach ($data['code'] as $code) {
-                    $msg .= (!empty(constant::$codeMsg[$code]) ? constant::$codeMsg[$code] : ConstantModel::$codeMsg[$code]) . ' or ';
+        if (empty($data['msg'])) {
+            if (is_array($data) && isset($data['code'])) {
+                if (is_array($data['code'])) {
+                    $msg = '';
+                    foreach ($data['code'] as $code) {
+                        $msg .= (!empty(constant::$codeMsg[$code]) ? constant::$codeMsg[$code] : ConstantModel::$codeMsg[$code]) . ' or ';
+                    }
+                    $msg = substr($msg, 0, -4);
+                } else {
+                    $msg = (!empty(constant::$codeMsg[$data['code']]) ? constant::$codeMsg[$data['code']] : ConstantModel::$codeMsg[$data['code']]);
                 }
-                $msg = substr($msg, 0, -4);
             } else {
-                $msg = (!empty(constant::$codeMsg[$data['code']]) ? constant::$codeMsg[$data['code']] : ConstantModel::$codeMsg[$data['code']]);
+                $msg = $data;
             }
         } else {
-            $msg = $data;
+            $msg = $data['msg'];
         }
+
         echo '<script>alert("' . $msg . '");history.go(-1);</script>';
         exit();
     }
